@@ -1,0 +1,30 @@
+{
+  "name": "express-mesto-gha",
+  "version": "1.0.0",
+  "description": "[![Tests](../../actions/workflows/tests-13-sprint.yml/badge.svg)](../../actions/workflows/tests-13-sprint.yml) [![Tests](../../actions/workflows/tests-14-sprint.yml/badge.svg)](../../actions/workflows/tests-14-sprint.yml) # Проект Mesto фронтенд + бэкенд",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "npx eslint ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alexs41/express-mesto-gha.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/alexs41/express-mesto-gha/issues"
+  },
+  "homepage": "https://github.com/alexs41/express-mesto-gha#readme",
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.41.0",
+    "@typescript-eslint/parser": "^5.41.0",
+    "concurrently": "^7.5.0",
+    "eslint": "^8.26.0",
+    "eslint-plugin-react": "^7.31.10"
+  },
+  "dependencies": {
+    "eslint-config-airbnb": "^19.0.4"
+  }
+}

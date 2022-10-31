@@ -1,7 +1,7 @@
 // models/user.js
-const mongoose = require('mongoose');
+const db = require('../db');
 
-const cardSchema = new mongoose.Schema({
+const cardSchema = new db.Schema({
   name: { // у пользователя есть имя — опишем требования к имени в схеме:
     type: String, // имя — это строка
     required: true, // оно должно быть у каждого пользователя, так что имя — обязательное поле
@@ -13,11 +13,11 @@ const cardSchema = new mongoose.Schema({
     required: true,
   },
   owner: {
-    type: mongoose.ObjectId,
+    type: db.ObjectId,
     required: true,
   },
   likes: [{ // описываем схему для одного элемента и заключаем её в квадратные скобки
-    type: mongoose.ObjectId,
+    type: db.ObjectId,
     default: [],
   }],
   createdAt: {
@@ -26,4 +26,4 @@ const cardSchema = new mongoose.Schema({
   }
 });
 
-module.exports = mongoose.model('card', cardSchema);
+module.exports = db.model('Card', cardSchema);

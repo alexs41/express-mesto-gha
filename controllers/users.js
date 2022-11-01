@@ -15,6 +15,12 @@ const responseServerError = (res, message) => res
   message: `На сервере произошла ошибка. ${message}`,
 });
 
+const responseNotFound = (res, message) => res
+  .status(constants.HTTP_STATUS_NOT_FOUND)
+  .send({
+    message: `${message}`,
+  });
+
 export function getAllUsers(req, res) {
   User.find({})
     .then(users => res.send({ data: users }))
@@ -23,7 +29,13 @@ export function getAllUsers(req, res) {
 
 export function getUserById(req, res) {
   User.findById(req.params.userId)
-    .then(user => res.send(user))
+    .then(user => {
+      if (!user) {
+        responseNotFound(res, 'Пользователь не найден');
+      } else {
+        res.send(user);
+      };
+    })
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
         responseBadRequestError(res, err.message);
@@ -53,7 +65,13 @@ export function updateUserInfo(req, res) {
     upsert: true // если пользователь не найден, он будет создан
   })
     .then(user => res.send({ data: user }))
-    .catch(err => res.status(500).send({ message: 'Произошла ошибка' }));
+    .catch((err) => {
+      if (err.name === 'ValidationError' || err.name === 'CastError') {
+        responseBadRequestError(res, err.message);
+      } else {
+        responseServerError(res, err.HTTP_STATUS_BAD_REQUESTmessage);
+      }
+    });// данные не записались, вернём ошибку
 }
 
 export function updateAvatar(req, res) {

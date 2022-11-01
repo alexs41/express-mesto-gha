@@ -1,6 +1,6 @@
 {
   "name": "express-mesto-gha",
-  "author": "Kaigorodov Aleksandr",
+  "author": "",
   "version": "1.0.0",
   "type": "module",
   "description": "[![Tests](../../actions/workflows/tests-13-sprint.yml/badge.svg)](../../actions/workflows/tests-13-sprint.yml) [![Tests](../../actions/workflows/tests-14-sprint.yml/badge.svg)](../../actions/workflows/tests-14-sprint.yml) # Проект Mesto фронтенд + бэкенд",
@@ -15,7 +15,6 @@
     "type": "git",
     "url": "git+https://github.com/alexs41/express-mesto-gha.git"
   },
-  "author": "",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/alexs41/express-mesto-gha/issues"
@@ -26,6 +25,7 @@
     "@typescript-eslint/parser": "^5.41.0",
     "concurrently": "^7.5.0",
     "eslint": "^8.26.0",
+    "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-standard-with-typescript": "^23.0.0",
     "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-n": "^15.3.0",

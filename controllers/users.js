@@ -24,7 +24,13 @@ export function getAllUsers(req, res) {
 export function getUserById(req, res) {
   User.findById(req.params.userId)
     .then(user => res.send(user))
-    .catch(() => res.status(404).send({ message: 'Пользователь не найден' }));
+    .catch((err) => {
+      if (err.name === 'ValidationError' || err.name === 'CastError') {
+        responseBadRequestError(res, err.message);
+      } else {
+        responseServerError(res, err.HTTP_STATUS_BAD_REQUESTmessage);
+      }
+    });// данные не записались, вернём ошибку
 }
 
 export function createUser(req, res) {

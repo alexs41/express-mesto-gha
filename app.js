@@ -1,35 +1,57 @@
 import express from 'express';
 const { PORT = 3000 } = process.env;
-import { connect } from 'mongoose';
-const app = express();
+import { constants } from 'http2';
+import { connect, disconnect } from 'mongoose';
+
 import bodyParser from 'body-parser';
 //------------------------------------
 import userRoutes from './routes/users.js';
 import cardRoutes from './routes/cards.js'
 //------------------------------------
-app.use(bodyParser.json());
+export const run = async (envName) => {
+  process.on('unhandledRejection', (err) => {
+    console.error(err);
+    process.exit(1);
+  });
 
-connect('mongodb://localhost:27017/mestodb', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-}, err => {
-  if(err) throw err;
-  console.log('Connected to MongoDB!!!')
-});
+  const app = express();
 
-app.use((req, res, next) => {
-  req.user = {
-    _id: '635fd8104cd2ea3088cd35fe' // хардкод _id пользователя
+  app.use(bodyParser.json());
+
+  connect('mongodb://localhost:27017/mestodb', {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  }, err => {
+    if (err) throw err;
+    console.log('Connected to MongoDB!!!')
+  });
+
+  app.use((req, res, next) => {
+    req.user = {
+      _id: '635fd8104cd2ea3088cd35fe' // хардкод _id пользователя
+    };
+    next();
+  });
+
+  app.use('/users', userRoutes);
+  app.use('/cards', cardRoutes);
+
+  app.use((req, res, next) => {
+    res.status(constants.HTTP_STATUS_NOT_FOUND)
+      .send({message: `Страница не найдена. Ошибка 404.`});
+    next();
+  })
+
+  app.listen(PORT, () => {
+    console.log(`App listening on port ${PORT}`);// Если всё работает, консоль покажет, какой порт приложение слушает
+  })
+
+  const stop = async () => {
+    await disconnect();
+    process.exit(0);
   };
-  next();
-});
 
-app.use('/users', userRoutes);
-app.use('/cards', cardRoutes);
-
-app.listen(PORT, () => {
-  console.log(`App listening on port ${PORT}`);// Если всё работает, консоль покажет, какой порт приложение слушает
-})
-
-
+  process.on('SIGTERM', stop);
+  process.on('SIGINT', stop);
+};
 

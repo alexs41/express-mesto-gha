@@ -3,6 +3,18 @@
 import { constants } from 'http2';
 import { User } from '../models/user.js';
 
+const responseBadRequestError = (res, message) => res
+  .status(constants.HTTP_STATUS_BAD_REQUEST)
+  .send({
+    message: `Некорректные данные пользователя. ${message}`,
+  });
+
+const responseServerError = (res, message) => res
+.status(constants.HTTP_STATUS_SERVICE_UNAVAILABLE)
+.send({
+  message: `На сервере произошла ошибка. ${message}`,
+});
+
 export function getAllUsers(req, res) {
   User.find({})
     .then(users => res.send({ data: users }))
@@ -19,7 +31,13 @@ export function createUser(req, res) {
   const { name, about, avatar } = req.body;
   User.create({ name, about, avatar })
     .then(user => res.send({ data: user }))// вернём записанные в базу данные
-    .catch(err => res.status(500).send({ message: 'Произошла ошибка' }));// данные не записались, вернём ошибку
+    .catch((err) => {
+      if (err.name === 'ValidationError' || err.name === 'CastError') {
+        responseBadRequestError(res, err.message);
+      } else {
+        responseServerError(res, err.HTTP_STATUS_BAD_REQUESTmessage);
+      }
+    });// данные не записались, вернём ошибку
 }
 
 export function updateUserInfo(req, res) {

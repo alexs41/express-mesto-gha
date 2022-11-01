@@ -22,7 +22,7 @@ const cardSchema = new Schema({
   createdAt: {
     type: Date,
     default: Date.now,
-  }
-});
+  },
+}, { versionKey: false });
 
 export const Card = model('Card', cardSchema);

@@ -1,4 +1,3 @@
-// models/user.js
 const db = require('../db');
 
 const cardSchema = new db.Schema({

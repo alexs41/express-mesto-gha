@@ -4,7 +4,7 @@ import { Card } from '../models/card.js'
 const responseBadRequestError = (res, message) => res
   .status(constants.HTTP_STATUS_BAD_REQUEST)
   .send({
-    message: `Некорректные данные пользователя. ${message}`,
+    message: `Некорректные данные. ${message}`,
   });
 
 const responseServerError = (res, message) => res
@@ -50,7 +50,7 @@ export function likeCard(req, res) {
     { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
     { new: true },// обработчик then получит на вход обновлённую запись
   )
-    .then(card => res.send({ data: card }))// вернём записанные в базу данные
+    .then(card => (!card) ? responseNotFound(res, 'Карточка не найдена') : res.send({ data: card }))// вернём записанные в базу данные
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
         responseBadRequestError(res, err.message);
@@ -65,7 +65,13 @@ export function disLikeCard(req, res) {
     { $pull: { likes: req.user._id } }, // убрать _id из массива
     { new: true },
   )
-    .then(card => res.send({ data: card }))
-    .catch(err => res.status(500).send({ message: 'Произошла ошибка удаления карточки' }));
+    .then(card => res.send({ data: card }))// вернём записанные в базу данные
+    .catch((err) => {
+      if (err.name === 'ValidationError' || err.name === 'CastError') {
+        responseBadRequestError(res, err.message);
+      } else {
+        responseServerError(res, err.HTTP_STATUS_BAD_REQUESTmessage);
+      }
+    });// данные не записались, вернём ошибку
 }
 

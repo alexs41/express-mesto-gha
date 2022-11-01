@@ -41,8 +41,14 @@ export function createCard(req, res) {
 
 export function deleteCard(req, res) {
   Card.findByIdAndRemove(req.params.cardId)
-    .then(card => res.send({ data: card }))
-    .catch(err => res.status(500).send({ message: 'Произошла ошибка удаления карточки' }));
+    .then(card => (!card) ? responseNotFound(res, 'Карточка не найдена') : res.send(card))
+    .catch((err) => {
+      if (err.name === 'ValidationError' || err.name === 'CastError') {
+        responseBadRequestError(res, err.message);
+      } else {
+        responseServerError(res, err.HTTP_STATUS_BAD_REQUESTmessage);
+      }
+    });// данные не записались, вернём ошибку
 }
 
 export function likeCard(req, res) {
@@ -65,7 +71,7 @@ export function disLikeCard(req, res) {
     { $pull: { likes: req.user._id } }, // убрать _id из массива
     { new: true },
   )
-    .then(card => res.send({ data: card }))// вернём записанные в базу данные
+    .then(card => (!card) ? responseNotFound(res, 'Карточка не найдена') : res.send(card))
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
         responseBadRequestError(res, err.message);

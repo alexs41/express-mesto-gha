@@ -1,6 +1,6 @@
-const db = require('mongoose');
+import { Schema, model } from 'mongoose';
 
-const userSchema = new db.Schema({
+const userSchema = new Schema({
   name: { // у пользователя есть имя — опишем требования к имени в схеме:
     type: String, // имя — это строка
     required: true, // оно должно быть у каждого пользователя, так что имя — обязательное поле
@@ -19,4 +19,5 @@ const userSchema = new db.Schema({
   },
 });
 
-module.exports = db.model('User', userSchema);
+// export default User = model('User', userSchema);
+export const User = model('User', userSchema);

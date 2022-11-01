@@ -1,6 +1,6 @@
-const db = require('mongoose');
+import { Schema, ObjectId, model } from 'mongoose';
 
-const cardSchema = new db.Schema({
+const cardSchema = new Schema({
   name: { // у пользователя есть имя — опишем требования к имени в схеме:
     type: String, // имя — это строка
     required: true, // оно должно быть у каждого пользователя, так что имя — обязательное поле
@@ -12,11 +12,11 @@ const cardSchema = new db.Schema({
     required: true,
   },
   owner: {
-    type: db.ObjectId,
+    type: ObjectId,
     required: true,
   },
   likes: [{ // описываем схему для одного элемента и заключаем её в квадратные скобки
-    type: db.ObjectId,
+    type: ObjectId,
     default: [],
   }],
   createdAt: {
@@ -25,4 +25,4 @@ const cardSchema = new db.Schema({
   }
 });
 
-module.exports = db.model('Card', cardSchema);
+export const Card = model('Card', cardSchema);

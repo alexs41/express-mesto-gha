@@ -1,13 +1,17 @@
-const express = require('express');
-const controller = require('../controllers/users');
-const router = express.Router();
-const bodyParser = require('body-parser');
-const jsonParser = bodyParser.json();
+import { Router } from 'express';
+import { getAllUsers, getUserById, createUser, updateUserInfo, updateAvatar } from '../controllers/users.js';
+const userRoutes = Router();
+// import bodyParser from 'body-parser';
+// const jsonParser = json();
 
-router.get('/', controller.getAllUsers);
-router.get('/:userId', controller.getUserById);
-router.post('/', jsonParser, controller.createUser);
-router.patch('/me', jsonParser, controller.updateUserInfo);
-router.patch('/me/avatar', jsonParser, controller.updateAvatar);
+userRoutes.get('/', getAllUsers);
+userRoutes.get('/:userId', getUserById);
+userRoutes.post('/', createUser);
+userRoutes.patch('/me', updateUserInfo);
+userRoutes.patch('/me/avatar', updateAvatar);
 
-module.exports = router;
+// router.post('/', jsonParser, createUser);
+// router.patch('/me', jsonParser, updateUserInfo);
+// router.patch('/me/avatar', jsonParser, updateAvatar);
+
+export default userRoutes;

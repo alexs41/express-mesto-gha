@@ -1,14 +1,16 @@
-const express = require('express');
-const controller = require('../controllers/cards');
-const router = express.Router();
-const bodyParser = require('body-parser');
-const jsonParser = bodyParser.json();
+import { Router } from 'express';
+import { getAllCards, createCard, deleteCard, likeCard, disLikeCard } from '../controllers/cards.js';
+const cardRoutes = Router();
+// import { json } from 'body-parser';
+// const jsonParser = json();
 
+cardRoutes.get('/', getAllCards);
+cardRoutes.post('/', createCard);
+cardRoutes.delete('/:cardId', deleteCard);
+cardRoutes.put('/:cardId/likes', likeCard);
+cardRoutes.delete('/:cardId/likes', disLikeCard);
 
-router.get('/', controller.getAllCards);
-router.post('/', jsonParser, controller.createCard);
-router.delete('/:cardId', controller.deleteCard);
-router.put('/:cardId/likes', jsonParser, controller.likeCard);
-router.delete('/:cardId/likes', controller.disLikeCard);
+// router.post('/', jsonParser, createCard);
+// router.put('/:cardId/likes', jsonParser, likeCard);
 
-module.exports = router;
+export default cardRoutes;

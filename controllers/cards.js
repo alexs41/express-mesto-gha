@@ -1,12 +1,13 @@
-const Card = require('../models/card');
+// import { find, create, findByIdAndRemove, findByIdAndUpdate } from '../models/card.js';
+import { Card } from '../models/card.js'
 
-module.exports.getAllCards = (req, res) => {
+export function getAllCards(req, res) {
   Card.find({})
     .then(cards => res.send({ data: cards }))
     .catch(() => res.status(500).send({ message: 'Произошла ошибка' }));
 }
 
-module.exports.createCard = (req, res) => {
+export function createCard(req, res) {
   const { name, link } = req.body;
   const owner = req.user._id;
   Card.create({ name, link, owner})
@@ -14,13 +15,13 @@ module.exports.createCard = (req, res) => {
     .catch(err => res.status(500).send({ message: 'Произошла ошибка, карточка не создана' }));// данные не записались, вернём ошибку
 }
 
-module.exports.deleteCard = (req, res) => {
+export function deleteCard(req, res) {
   Card.findByIdAndRemove(req.params.cardId)
     .then(card => res.send({ data: card }))
     .catch(err => res.status(500).send({ message: 'Произошла ошибка удаления карточки' }));
 }
 
-module.exports.likeCard = (req, res) => {
+export function likeCard(req, res) {
   Card.findByIdAndUpdate(req.params.cardId,
     { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
     { new: true },// обработчик then получит на вход обновлённую запись
@@ -29,7 +30,7 @@ module.exports.likeCard = (req, res) => {
     .catch(err => res.status(500).send({ message: 'Произошла ошибка' }));// данные не записались, вернём ошибку
 }
 
-module.exports.disLikeCard = (req, res) => {
+export function disLikeCard(req, res) {
   Card.findByIdAndUpdate(req.params.cardId,
     { $pull: { likes: req.user._id } }, // убрать _id из массива
     { new: true },

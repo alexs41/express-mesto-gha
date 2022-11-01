@@ -1,7 +1,7 @@
 const express = require('express');
 const path = require('path');
 const { PORT = 3000 } = process.env;
-
+const db = require('mongoose');
 const app = express();
 
 //------------------------------------
@@ -9,6 +9,14 @@ const userRoutes = require('./routes/users');
 const cardRoutes = require('./routes/cards');
 //------------------------------------
 app.use(express.static(path.join(__dirname, 'public')));
+
+db.connect('mongodb://localhost:27017/mestodb', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+}, err => {
+  if(err) throw err;
+  console.log('Connected to MongoDB!!!')
+});
 
 app.use((req, res, next) => {
   req.user = {

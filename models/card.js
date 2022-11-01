@@ -1,4 +1,4 @@
-const db = require('../db');
+const db = require('mongoose');
 
 const cardSchema = new db.Schema({
   name: { // у пользователя есть имя — опишем требования к имени в схеме:

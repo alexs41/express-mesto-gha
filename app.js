@@ -12,6 +12,14 @@ const app = express();
 const jsonParser = bodyParser.json()
 
 app.use(express.static(path.join(__dirname, 'public')));
+
+app.use((req, res, next) => {
+  req.user = {
+    _id: '635fd8104cd2ea3088cd35fe' // хардкода _id пользователя
+  };
+  next();
+});
+
 //------------------------------- USER START ---------------------------------
 app.get('/users', (req, res) => {
   User.find({})
@@ -31,13 +39,28 @@ app.post('/users', jsonParser, (req, res) => {
     .then(user => res.send({ data: user }))// вернём записанные в базу данные
     .catch(err => res.status(500).send({ message: 'Произошла ошибка' }));// данные не записались, вернём ошибку
 });
-//------------------------------- USER END ---------------------------------
-app.use((req, res, next) => {
-  req.user = {
-    _id: '635fd8104cd2ea3088cd35fe' // вставьте сюда _id созданного в предыдущем пункте пользователя
-  };
-  next();
+
+app.patch('/users/me', jsonParser, (req, res) => {
+  User.findByIdAndUpdate(req.user._id, { name: req.body.name, about: req.body.about }, {
+    new: true, // обработчик then получит на вход обновлённую запись
+    runValidators: true, // данные будут валидированы перед изменением
+    upsert: true // если пользователь не найден, он будет создан
+  })
+    .then(user => res.send({ data: user }))
+    .catch(err => res.status(500).send({ message: 'Произошла ошибка' }));
 });
+
+app.patch('/users/me/avatar', jsonParser, (req, res) => {
+  User.findByIdAndUpdate(req.user._id, { avatar: req.body.avatar }, {
+    new: true, // обработчик then получит на вход обновлённую запись
+    runValidators: true, // данные будут валидированы перед изменением
+  })
+    .then(user => res.send({ data: user }))
+    .catch(err => res.status(500).send({ message: 'Произошла ошибка' }));
+});
+
+//------------------------------- USER END ---------------------------------
+
 //------------------------------- CARD START ---------------------------------
 app.get('/cards', (req, res) => {
   Card.find({})
@@ -48,7 +71,7 @@ app.get('/cards', (req, res) => {
 app.post('/cards', jsonParser, (req, res) => {
   const { name, link } = req.body;
   const owner = req.user._id;
-  console.log(name, ' ' , link);
+  // console.log(name, ' ' , link);
   Card.create({ name, link, owner})
     .then(card => res.send({ data: card }))// вернём записанные в базу данные
     .catch(err => res.status(500).send({ message: 'Произошла ошибка, карточка не создана' }));// данные не записались, вернём ошибку
@@ -59,8 +82,10 @@ app.delete('/cards/:cardId', (req, res) => {
       .then(card => res.send({ data: card }))
       .catch(err => res.status(500).send({ message: 'Произошла ошибка удаления карточки' }));
 });
-
 //------------------------------- CARD END ---------------------------------
+
+
+
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);// Если всё работает, консоль покажет, какой порт приложение слушает
 })

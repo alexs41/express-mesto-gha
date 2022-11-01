@@ -1,5 +1,23 @@
-// import { find, create, findByIdAndRemove, findByIdAndUpdate } from '../models/card.js';
+import { constants } from 'http2';
 import { Card } from '../models/card.js'
+
+const responseBadRequestError = (res, message) => res
+  .status(constants.HTTP_STATUS_BAD_REQUEST)
+  .send({
+    message: `Некорректные данные пользователя. ${message}`,
+  });
+
+const responseServerError = (res, message) => res
+.status(constants.HTTP_STATUS_SERVICE_UNAVAILABLE)
+.send({
+  message: `На сервере произошла ошибка. ${message}`,
+});
+
+const responseNotFound = (res, message) => res
+  .status(constants.HTTP_STATUS_NOT_FOUND)
+  .send({
+    message: `${message}`,
+  });
 
 export function getAllCards(req, res) {
   Card.find({})
@@ -12,7 +30,13 @@ export function createCard(req, res) {
   const owner = req.user._id;
   Card.create({ name, link, owner})
     .then(card => res.send({ data: card }))// вернём записанные в базу данные
-    .catch(err => res.status(500).send({ message: 'Произошла ошибка, карточка не создана' }));// данные не записались, вернём ошибку
+    .catch((err) => {
+      if (err.name === 'ValidationError' || err.name === 'CastError') {
+        responseBadRequestError(res, err.message);
+      } else {
+        responseServerError(res, err.HTTP_STATUS_BAD_REQUESTmessage);
+      }
+    });// данные не записались, вернём ошибку
 }
 
 export function deleteCard(req, res) {
@@ -27,7 +51,13 @@ export function likeCard(req, res) {
     { new: true },// обработчик then получит на вход обновлённую запись
   )
     .then(card => res.send({ data: card }))// вернём записанные в базу данные
-    .catch(err => res.status(500).send({ message: 'Произошла ошибка' }));// данные не записались, вернём ошибку
+    .catch((err) => {
+      if (err.name === 'ValidationError' || err.name === 'CastError') {
+        responseBadRequestError(res, err.message);
+      } else {
+        responseServerError(res, err.HTTP_STATUS_BAD_REQUESTmessage);
+      }
+    });// данные не записались, вернём ошибку
 }
 
 export function disLikeCard(req, res) {

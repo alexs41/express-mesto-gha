@@ -1,23 +1,6 @@
-import { constants } from 'http2';
+// import { constants } from 'http2';
 import { Card } from '../models/card.js';
-
-const responseBadRequestError = (res) => res
-  .status(constants.HTTP_STATUS_BAD_REQUEST)
-  .send({
-    message: 'Некорректные данные.',
-  });
-
-const responseServerError = (res) => res
-  .status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR)
-  .send({
-    message: 'На сервере произошла ошибка.',
-  });
-
-const responseNotFound = (res, message) => res
-  .status(constants.HTTP_STATUS_NOT_FOUND)
-  .send({
-    message: `${message}`,
-  });
+import { responseBadRequestError, responseServerError, responseNotFound } from '../utils/utils.js';
 
 export function getAllCards(req, res) {
   Card.find({})

@@ -1,34 +1,10 @@
-import { constants } from 'http2';
 import { User } from '../models/user.js';
-
-const responseBadRequestError = (res) => res
-  .status(constants.HTTP_STATUS_BAD_REQUEST)
-  .send({
-    message: 'Некорректные данные.',
-  });
-
-const responseServerError = (res) => res
-  .status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR)
-  .send({
-    message: 'На сервере произошла ошибка.',
-  });
-
-const responseNotFound = (res, message) => res
-  .status(constants.HTTP_STATUS_NOT_FOUND)
-  .send({
-    message: `${message}`,
-  });
+import { responseBadRequestError, responseServerError, responseNotFound } from '../utils/utils.js';
 
 export function getAllUsers(req, res) {
   User.find({})
     .then((users) => res.send({ data: users }))
-    .catch((err) => {
-      if (err.name === 'ValidationError' || err.name === 'CastError') {
-        responseBadRequestError(res);
-      } else {
-        responseServerError(res);
-      }
-    });// данные не записались, вернём ошибку
+    .catch(() => responseServerError(res));
 }
 
 export function getUserById(req, res) {

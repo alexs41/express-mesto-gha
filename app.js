@@ -9,7 +9,7 @@ import cardRoutes from './routes/cards.js';
 
 const { PORT = 3000 } = process.env;
 //------------------------------------
-export const run = async (envName) => {
+export const run = async () => {
   process.on('unhandledRejection', (err) => {
     console.error(err);
     process.exit(1);

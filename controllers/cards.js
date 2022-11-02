@@ -1,13 +1,13 @@
 import { constants } from 'http2';
 import { Card } from '../models/card.js';
 
-const responseBadRequestError = (res, message) => res
+const responseBadRequestError = (res) => res
   .status(constants.HTTP_STATUS_BAD_REQUEST)
   .send({
     message: 'Некорректные данные.',
   });
 
-const responseServerError = (res, message) => res
+const responseServerError = (res) => res
   .status(constants.HTTP_STATUS_INTERNAL_SERVER_ERROR)
   .send({
     message: 'На сервере произошла ошибка.',
@@ -24,9 +24,9 @@ export function getAllCards(req, res) {
     .then((cards) => res.send({ data: cards }))
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
-        responseBadRequestError(res, err.message);
+        responseBadRequestError(res);
       } else {
-        responseServerError(res, err.message);
+        responseServerError(res);
       }
     });// данные не записались, вернём ошибку
 }
@@ -38,9 +38,9 @@ export function createCard(req, res) {
     .then((card) => res.send({ data: card }))// вернём записанные в базу данные
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
-        responseBadRequestError(res, err.message);
+        responseBadRequestError(res);
       } else {
-        responseServerError(res, err.message);
+        responseServerError(res);
       }
     });// данные не записались, вернём ошибку
 }
@@ -50,9 +50,9 @@ export function deleteCard(req, res) {
     .then((card) => ((!card) ? responseNotFound(res, 'Карточка не найдена') : res.send(card)))
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
-        responseBadRequestError(res, err.message);
+        responseBadRequestError(res);
       } else {
-        responseServerError(res, err.message);
+        responseServerError(res);
       }
     });// данные не записались, вернём ошибку
 }
@@ -66,9 +66,9 @@ export function likeCard(req, res) {
     .then((card) => ((!card) ? responseNotFound(res, 'Карточка не найдена') : res.send({ data: card })))// вернём записанные в базу данные
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
-        responseBadRequestError(res, err.message);
+        responseBadRequestError(res);
       } else {
-        responseServerError(res, err.message);
+        responseServerError(res);
       }
     });// данные не записались, вернём ошибку
 }
@@ -82,9 +82,9 @@ export function disLikeCard(req, res) {
     .then((card) => ((!card) ? responseNotFound(res, 'Карточка не найдена') : res.send(card)))
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
-        responseBadRequestError(res, err.message);
+        responseBadRequestError(res);
       } else {
-        responseServerError(res, err.message);
+        responseServerError(res);
       }
     });// данные не записались, вернём ошибку
 }

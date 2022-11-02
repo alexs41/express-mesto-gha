@@ -15,7 +15,7 @@ const cardSchema = new Schema({
     type: ObjectId,
     required: true,
   },
-  likes: [{ // описываем схему для одного элемента и заключаем её в квадратные скобки
+  likes: [{
     type: ObjectId,
     default: [],
   }],

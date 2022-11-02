@@ -1,5 +1,8 @@
 import { Router } from 'express';
-import { getAllCards, createCard, deleteCard, likeCard, disLikeCard } from '../controllers/cards.js';
+import {
+  getAllCards, createCard, deleteCard, likeCard, disLikeCard,
+} from '../controllers/cards.js';
+
 const cardRoutes = Router();
 // import { json } from 'body-parser';
 // const jsonParser = json();

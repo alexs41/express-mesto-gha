@@ -6,6 +6,9 @@ import bodyParser from 'body-parser';
 //------------------------------------
 import userRoutes from './routes/users.js';
 import cardRoutes from './routes/cards.js';
+import auth from './middlewares/auth.js';
+import { login, createUser } from './controllers/users.js';
+import cookieParser from 'cookie-parser';
 
 const { PORT = 3000 } = process.env;
 //------------------------------------
@@ -18,6 +21,7 @@ export const run = async () => {
   const app = express();
 
   app.use(bodyParser.json());
+  app.use(cookieParser()); // подключаем парсер кук как мидлвэр
 
   connect('mongodb://localhost:27017/mestodb', {
     useNewUrlParser: true,
@@ -27,12 +31,18 @@ export const run = async () => {
     console.log('Connected to MongoDB!!!');
   });
 
-  app.use((req, res, next) => {
-    req.user = {
-      _id: '635fd8104cd2ea3088cd35fe', // хардкод _id пользователя
-    };
-    next();
-  });
+  // app.use((req, res, next) => {
+  //   req.user = {
+  //     _id: '635fd8104cd2ea3088cd35fe', // хардкод _id пользователя
+  //   };
+  //   next();
+  // });
+
+  app.post('/signin', login);
+  app.post('/signup', createUser);
+
+  // авторизация
+  app.use(auth);
 
   app.use('/users', userRoutes);
   app.use('/cards', cardRoutes);

@@ -1,5 +1,8 @@
 import { User } from '../models/user.js';
 import { responseBadRequestError, responseServerError, responseNotFound } from '../utils/utils.js';
+import bcrypt from 'bcrypt';
+import cookieParser from 'cookie-parser';
+import jwt from 'jsonwebtoken';
 
 export function getAllUsers(req, res) {
   User.find({})
@@ -26,8 +29,16 @@ export function getUserById(req, res) {
 }
 
 export function createUser(req, res) {
-  const { name, about, avatar } = req.body;
-  User.create({ name, about, avatar })
+  const { name, about, avatar, email, password } = req.body;
+
+  bcrypt.hash(password, 10)
+    .then(hash => User.create({
+      name: name,
+      about: about,
+      avatar: avatar,
+      email: email,
+      password: hash,
+     }))
     .then((user) => res.send({ data: user }))// вернём записанные в базу данные
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
@@ -59,6 +70,43 @@ export function updateAvatar(req, res) {
     runValidators: true, // данные будут валидированы перед изменением
   })
     .then((user) => res.send({ data: user }))
+    .catch((err) => {
+      if (err.name === 'ValidationError' || err.name === 'CastError') {
+        responseBadRequestError(res);
+      } else {
+        responseServerError(res);
+      }
+    });// данные не записались, вернём ошибку
+}
+
+export function login (req, res) {
+  const { email, password } = req.body;
+
+  return User.findUserByCredentials(email, password)
+    .then((user) => {
+      // аутентификация успешна! пользователь в переменной user
+      const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
+      // вернём токен
+      res.send({ token });
+      req.cookies.jwt = token;
+    })
+    .catch((err) => {
+      // ошибка аутентификации
+      res
+        .status(401)
+        .send({ message: err.message });
+    });
+};
+
+export function getCurrentUser(req, res) {
+  User.findById(req.user._id)
+    .then((user) => {
+      if (!user) {
+        responseNotFound(res, 'Пользователь не найден');
+      } else {
+        res.send(user);
+      }
+    })
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
         responseBadRequestError(res);

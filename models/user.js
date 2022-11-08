@@ -1,22 +1,59 @@
 import { Schema, model } from 'mongoose';
+import validator from 'validator';
+import bcrypt from 'bcrypt';
 
 const userSchema = new Schema({
   name: { // у пользователя есть имя — опишем требования к имени в схеме:
     type: String, // имя — это строка
-    required: true, // оно должно быть у каждого пользователя, так что имя — обязательное поле
     minlength: 2, // минимальная длина имени — 2 символа
     maxlength: 30, // а максимальная — 30 символов
+    default: 'Жак-Ив Кусто',
   },
   about: {
     type: String,
-    required: true,
     minlength: 2,
     maxlength: 30,
+    default: 'Исследователь',
   },
   avatar: {
     type: String,
-    required: true,
+    default: 'https://pictures.s3.yandex.net/resources/jacques-cousteau_1604399756.png',
+    validate: validator.isURL,
   },
+  email: {
+    type: String,
+    required: true,
+    unique: true,
+    validate: validator.isEmail,
+  },
+  password: {
+    type: String,
+    required: true,
+    minlength: 6,
+  }
 }, { versionKey: false });
+
+userSchema.statics.findUserByCredentials = function (email, password) {
+  return this.findOne({ email })
+    .then((user) => {
+      if (!user) {
+        return Promise.reject(new Error('email не найден'));
+      }
+      // return bcrypt.compare(password, user.password)
+      console.log('password ', password, 'user.password ', user.password);
+      // if (password === user.password) {
+      //   return user;
+      // } else {
+      //   return Promise.reject(new Error('Неверный пароль'));
+      // }
+      return bcrypt.compare(password, user.password)
+        .then((matched) => {
+          if (!matched) {
+            return Promise.reject(new Error('Неверный пароль'));
+          }
+          return user; // теперь user доступен
+        });
+    });
+};
 
 export const User = model('User', userSchema);

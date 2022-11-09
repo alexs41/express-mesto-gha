@@ -1,7 +1,7 @@
 import express from 'express';
 import { constants } from 'http2';
 import { connect, disconnect } from 'mongoose';
-
+import { Joi, celebrate, errors } from 'celebrate';
 import bodyParser from 'body-parser';
 //------------------------------------
 import cookieParser from 'cookie-parser';
@@ -39,7 +39,16 @@ export const run = async () => {
   // });
 
   app.post('/signin', login);
-  app.post('/signup', createUser);
+  app.post('/signup', celebrate({
+    // валидируем параметры
+    body: Joi.object().keys({
+      name: Joi.string().min(2).max(30),
+      about: Joi.string().min(2).max(30),
+      avatar: Joi.string().uri({ scheme: ['http', 'https'] }),
+      email: Joi.string().email().required(),
+      password: Joi.string().min(6).required()
+    }),
+  }), createUser);
 
   // авторизация
   app.use(auth);
@@ -47,6 +56,7 @@ export const run = async () => {
   app.use('/users', userRoutes);
   app.use('/cards', cardRoutes);
 
+  app.use(errors()); // обработчик ошибок celebrate
   app.use((req, res, next) => {
     res.status(constants.HTTP_STATUS_NOT_FOUND)
       .send({ message: 'Страница не найдена. Ошибка 404.' });

@@ -1,4 +1,21 @@
 import { Schema, ObjectId, model } from 'mongoose';
+import { Joi } from 'celebrate';
+
+// const cardSchema = Joi.object({
+//   name: Joi.string()
+//     .min(2)
+//     .max(30)
+//     .required(),
+
+//   link: Joi.link()
+//     .required(),
+//   owner: Joi.string()
+//     .required(),
+//   likes: Joi.string()
+//     .default([]),
+//   createdAt: Joi.date()
+//     .default(Date.now),
+// }, { versionKey: false });
 
 const cardSchema = new Schema({
   name: { // у пользователя есть имя — опишем требования к имени в схеме:

@@ -31,7 +31,7 @@ const userSchema = new Schema({
     required: true,
     minlength: 6,
     select: false,
-  }
+  },
 }, { versionKey: false });
 
 userSchema.statics.findUserByCredentials = function (email, password) {

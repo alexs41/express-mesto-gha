@@ -1,5 +1,7 @@
 import { Router } from 'express';
-import { getAllUsers, getUserById, updateUserInfo, updateAvatar, getCurrentUser } from '../controllers/users.js';
+import {
+  getAllUsers, getUserById, updateUserInfo, updateAvatar, getCurrentUser,
+} from '../controllers/users.js';
 
 const userRoutes = Router();
 // import bodyParser from 'body-parser';

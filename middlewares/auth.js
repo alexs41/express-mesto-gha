@@ -1,7 +1,6 @@
 import jwt from 'jsonwebtoken';
-import cookieParser from 'cookie-parser';
 
-export default function auth (req, res, next) {
+export default function auth(req, res, next) {
   const { authorization } = req.headers;
 
   if (!authorization || !authorization.startsWith('Bearer ')) {
@@ -23,4 +22,4 @@ export default function auth (req, res, next) {
 
   req.user = payload; // записываем пейлоуд в объект запроса
   next(); // пропускаем запрос дальше
-};
+}

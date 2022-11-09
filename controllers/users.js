@@ -1,8 +1,7 @@
-import { User } from '../models/user.js';
-import { responseBadRequestError, responseServerError, responseNotFound } from '../utils/utils.js';
 import bcrypt from 'bcrypt';
-import cookieParser from 'cookie-parser';
 import jwt from 'jsonwebtoken';
+import { responseBadRequestError, responseServerError, responseNotFound } from '../utils/utils.js';
+import { User } from '../models/user.js';
 
 export function getAllUsers(req, res) {
   User.find({})
@@ -29,16 +28,18 @@ export function getUserById(req, res) {
 }
 
 export function createUser(req, res) {
-  const { name, about, avatar, email, password } = req.body;
+  const {
+    name, about, avatar, email, password,
+  } = req.body;
 
   bcrypt.hash(password, 10)
-    .then(hash => User.create({
-      name: name,
-      about: about,
-      avatar: avatar,
-      email: email,
+    .then((hash) => User.create({
+      name,
+      about,
+      avatar,
+      email,
       password: hash,
-     }))
+    }))
     .then((user) => res.send({ data: user }))// вернём записанные в базу данные
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
@@ -79,7 +80,7 @@ export function updateAvatar(req, res) {
     });// данные не записались, вернём ошибку
 }
 
-export function login (req, res) {
+export function login(req, res) {
   const { email, password } = req.body;
 
   return User.findUserByCredentials(email, password)
@@ -96,7 +97,7 @@ export function login (req, res) {
         .status(401)
         .send({ message: err.message });
     });
-};
+}
 
 export function getCurrentUser(req, res) {
   User.findById(req.user._id)

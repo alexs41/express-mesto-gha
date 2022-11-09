@@ -4,11 +4,11 @@ import { connect, disconnect } from 'mongoose';
 
 import bodyParser from 'body-parser';
 //------------------------------------
+import cookieParser from 'cookie-parser';
 import userRoutes from './routes/users.js';
 import cardRoutes from './routes/cards.js';
 import auth from './middlewares/auth.js';
 import { login, createUser } from './controllers/users.js';
-import cookieParser from 'cookie-parser';
 
 const { PORT = 3000 } = process.env;
 //------------------------------------

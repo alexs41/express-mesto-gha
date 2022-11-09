@@ -14,6 +14,12 @@ const nameSchema = Joi
   .max(30)
   .required();
 
+const aboutSchema = Joi
+  .string()
+  .min(2)
+  .max(30)
+  .required();
+
 const userSchema = new Schema({
   name: { // у пользователя есть имя — опишем требования к имени в схеме:
     type: String, // имя — это строка
@@ -25,9 +31,11 @@ const userSchema = new Schema({
   },
   about: {
     type: String,
-    minlength: 2,
-    maxlength: 30,
     default: 'Исследователь',
+    validate: {
+      validator: (value) => !aboutSchema.validate(value).error,
+      message: () => 'Описание должно быть от 2 от 30 символов',
+    },
   },
   avatar: {
     type: String,

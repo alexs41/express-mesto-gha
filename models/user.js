@@ -1,25 +1,24 @@
 import { Schema, model } from 'mongoose';
 import validator from 'validator';
 import bcrypt from 'bcrypt';
-import { Joi } from 'celebrate';
+// import { Joi } from 'celebrate';
 
-const urlSchema = Joi
-  .string()
-  .uri({ scheme: ['http', 'https'] })
-  .required();
+// const urlSchema = Joi
+//   .string()
+//   .uri({ scheme: ['http', 'https'] })
+//   .required();
 
-const nameSchema = Joi
-  .string()
-  .min(2)
-  .max(30)
-  .required();
+// const nameSchema = Joi
+//   .string()
+//   .min(2)
+//   .max(30)
+//   .required();
 
-const aboutSchema = Joi
-  .string()
-  .min(2)
-  .max(30)
-  .required();
-
+// const aboutSchema = Joi
+//   .string()
+//   .min(2)
+//   .max(30)
+//   .required();
 
 const userSchema = new Schema({
   name: { // у пользователя есть имя — опишем требования к имени в схеме:
@@ -52,6 +51,7 @@ const userSchema = new Schema({
     select: false,
   },
 }, { versionKey: false });
+// { versionKey: false }
 
 userSchema.statics.findUserByCredentials = function (email, password) {
   return this.findOne({ email }).select('+password')

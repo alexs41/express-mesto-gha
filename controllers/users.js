@@ -40,7 +40,13 @@ export function createUser(req, res) {
       email,
       password: hash,
     }))
-    .then((user) => res.send({ data: user }))// вернём записанные в базу данные
+    .then((userDocument) => {
+        const user = userDocument.toObject();
+        delete user.password;
+      console.log('user ', user);
+      // delete user.password;
+      res.send({ data: user });
+    })// вернём записанные в базу данные
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
         responseBadRequestError(res);

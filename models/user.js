@@ -5,7 +5,7 @@ import { Joi } from 'celebrate';
 
 const urlSchema = Joi
   .string()
-  .url({ scheme: ['http', 'https'] })
+  .uri({ scheme: ['http', 'https'] })
   .required();
 
 const nameSchema = Joi

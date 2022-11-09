@@ -30,22 +30,16 @@ const userSchema = new Schema({
     type: String,
     required: true,
     minlength: 6,
+    select: false,
   }
 }, { versionKey: false });
 
 userSchema.statics.findUserByCredentials = function (email, password) {
-  return this.findOne({ email })
+  return this.findOne({ email }).select('+password')
     .then((user) => {
       if (!user) {
         return Promise.reject(new Error('email не найден'));
       }
-      // return bcrypt.compare(password, user.password)
-      console.log('password ', password, 'user.password ', user.password);
-      // if (password === user.password) {
-      //   return user;
-      // } else {
-      //   return Promise.reject(new Error('Неверный пароль'));
-      // }
       return bcrypt.compare(password, user.password)
         .then((matched) => {
           if (!matched) {

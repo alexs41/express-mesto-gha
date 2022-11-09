@@ -29,8 +29,8 @@ export function createCard(req, res) {
 }
 
 export function deleteCard(req, res) {
-  Card.findByIdAndRemove(req.params.cardId)
-    .then((card) => ((!card) ? responseNotFound(res, 'Карточка не найдена') : res.send(card)))
+  Card.findOneAndRemove({ _id: req.params.cardId, owner:  req.user._id})
+    .then((card) => ((!card) ? responseNotFound(res, 'Карточка не найдена, или это не карточка другого пользователя') : res.send(card)))
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
         responseBadRequestError(res);
@@ -38,6 +38,17 @@ export function deleteCard(req, res) {
         responseServerError(res);
       }
     });// данные не записались, вернём ошибку
+
+
+  // Card.findByIdAndRemove(req.params.cardId)
+  //   .then((card) => ((!card) ? responseNotFound(res, 'Карточка не найдена') : res.send(card)))
+  //   .catch((err) => {
+  //     if (err.name === 'ValidationError' || err.name === 'CastError') {
+  //       responseBadRequestError(res);
+  //     } else {
+  //       responseServerError(res);
+  //     }
+  //   });// данные не записались, вернём ошибку
 }
 
 export function likeCard(req, res) {

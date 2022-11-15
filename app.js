@@ -10,6 +10,12 @@ import cardRoutes from './routes/cards.js';
 import auth from './middlewares/auth.js';
 import { login, createUser } from './controllers/users.js';
 
+import {
+  celebrateBodyAuth,
+  celebrateBodyUser,
+  celebrateParamsRouteMe,
+} from './validators/users.js';
+
 const { PORT = 3000 } = process.env;
 //------------------------------------
 export const run = async () => {
@@ -31,24 +37,8 @@ export const run = async () => {
     console.log('Connected to MongoDB!!!');
   });
 
-  // app.use((req, res, next) => {
-  //   req.user = {
-  //     _id: '635fd8104cd2ea3088cd35fe', // хардкод _id пользователя
-  //   };
-  //   next();
-  // });
-
-  app.post('/signin', login);
-  app.post('/signup', celebrate({
-    // валидируем параметры
-    body: Joi.object().keys({
-      name: Joi.string().min(2).max(30),
-      about: Joi.string().min(2).max(30),
-      avatar: Joi.string().uri({ scheme: ['http', 'https'] }),
-      email: Joi.string().email().required(),
-      password: Joi.string().min(6).required()
-    }),
-  }), createUser);
+  app.post('/signin', celebrateBodyAuth, login);
+  app.post('/signup', celebrateBodyUser, createUser);
 
   // авторизация
   app.use(auth);

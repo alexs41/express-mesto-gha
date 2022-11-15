@@ -2,6 +2,19 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { responseBadRequestError, responseServerError, responseNotFound } from '../utils/utils.js';
 import { User } from '../models/user.js';
+import {
+  HTTPError,
+  ServerError,
+  NotFoundError,
+  ConflictError,
+  BadRequestError,
+} from '../errors/index.js';
+
+const notFoundError = new NotFoundError('Запрашиваемый пользователь не найден');
+const buildErrorServer = (message) => new ServerError(message);
+const buildErrorBadRequest = (message) => new BadRequestError(`Некорректные данные для пользователя. ${message}`);
+const errorNotUnique = new ConflictError('Пользователь с такой почтой уже существует');
+const UniqueErrorCode = 11000;
 
 export function getAllUsers(req, res) {
   User.find({})
@@ -27,7 +40,7 @@ export function getUserById(req, res) {
     });// данные не записались, вернём ошибку
 }
 
-export function createUser(req, res) {
+export function createUser(req, res, next) {
   const {
     name, about, avatar, email, password,
   } = req.body;
@@ -43,17 +56,20 @@ export function createUser(req, res) {
     .then((userDocument) => {
         const user = userDocument.toObject();
         delete user.password;
-      console.log('user ', user);
-      // delete user.password;
+      // console.log('user ', user);
       res.send({ data: user });
     })// вернём записанные в базу данные
     .catch((err) => {
-      if (err.name === 'ValidationError' || err.name === 'CastError') {
-        responseBadRequestError(res);
+      if (err instanceof HTTPError) {
+        next(err);
+      } else if (err.code === UniqueErrorCode) {
+        next(errorNotUnique);
+      } else if (err.name === 'ValidationError') {
+        next(buildErrorBadRequest(err.message));
       } else {
-        responseServerError(res);
+        next(buildErrorServer(err.message));
       }
-    });// данные не записались, вернём ошибку
+    });
 }
 
 export function updateUserInfo(req, res) {
@@ -122,3 +138,25 @@ export function getCurrentUser(req, res) {
       }
     });// данные не записались, вернём ошибку
 }
+
+export const readOne = (req, res, next) => {
+  const id = (req.params.id === 'me') ? req.user._id : req.params.id;
+
+  User.findById(id)
+    .then((user) => {
+      if (user) {
+        res.send(user);
+      } else {
+        throw notFoundError;
+      }
+    })
+    .catch((err) => {
+      if (err instanceof HTTPError) {
+        next(err);
+      } else if (err.name === 'CastError') {
+        next(buildErrorBadRequest(err.message));
+      } else {
+        next(buildErrorServer(err.message));
+      }
+    });
+};

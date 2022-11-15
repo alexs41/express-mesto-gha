@@ -9,6 +9,8 @@ import {
 
 import {
   celebrateParamsRouteMe,
+  celebrateBodyProfile,
+  celebrateBodyAvatar
 } from '../validators/users.js';
 
 const userRoutes = Router();
@@ -21,7 +23,7 @@ userRoutes.get('/:id', celebrateParamsRouteMe, readOne);
 
 // userRoutes.get('/:userId', getUserById);
 // userRoutes.post('/', createUser);
-userRoutes.patch('/me', updateUserInfo);
-userRoutes.patch('/me/avatar', updateAvatar);
+userRoutes.patch('/me', celebrateBodyProfile, updateUserInfo);
+userRoutes.patch('/me/avatar', celebrateBodyAvatar, updateAvatar);
 
 export default userRoutes;

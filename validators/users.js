@@ -31,14 +31,20 @@ const schemaObjectAuth = Joi.object({
   email: schemaEmail,
   password: schemaPassword,
 }).required();
+
+
 const schemaObjectUser = schemaObjectAuth // объединяем несколько схем в одну
   .concat(schemaObjectProfile)
   .concat(schemaObjectAvatar);
 
+const segmentBodyAvatar = { [Segments.BODY]: schemaObjectAvatar };
+const segmentBodyProfile = { [Segments.BODY]: schemaObjectProfile };
 const segmentBodyAuth = { [Segments.BODY]: schemaObjectAuth };
 const segmentBodyUser = { [Segments.BODY]: schemaObjectUser };
 const segmentParamsRouteMe = { [Segments.PARAMS]: schemaObjectRouteMe };
 
+export const celebrateBodyAvatar = celebrate(segmentBodyAvatar);
+export const celebrateBodyProfile = celebrate(segmentBodyProfile);
 export const celebrateBodyAuth = celebrate(segmentBodyAuth);
 export const celebrateBodyUser = celebrate(segmentBodyUser);
 export const celebrateParamsRouteMe = celebrate(segmentParamsRouteMe);

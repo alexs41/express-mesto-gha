@@ -15,11 +15,11 @@ const userRoutes = Router();
 // import bodyParser from 'body-parser';
 // const jsonParser = json();
 
-// userRoutes.get('/', getAllUsers);
+userRoutes.get('/', getAllUsers);
 // userRoutes.get('/me', getCurrentUser);
-userRoutes.get('/:id', celebrateParamsRouteMe, readOne);
+userRoutes.get('/:userId', celebrateParamsRouteMe, readOne);
 
-userRoutes.get('/:userId', getUserById);
+// userRoutes.get('/:userId', getUserById);
 // userRoutes.post('/', createUser);
 userRoutes.patch('/me', updateUserInfo);
 userRoutes.patch('/me/avatar', updateAvatar);

@@ -47,9 +47,10 @@ export const run = async () => {
   app.use('/cards', cardRoutes);
 
   app.use(errors()); // обработчик ошибок celebrate
-  app.use((req, res, next) => {
-    res.status(constants.HTTP_STATUS_NOT_FOUND)
-      .send({ message: 'Страница не найдена. Ошибка 404.' });
+  app.use((err, req, res, next) => {
+    const status = err.statusCode || constants.HTTP_STATUS_INTERNAL_SERVER_ERROR;
+    const message = err.message || 'Неизвестная ошибка';
+    res.status(status).send({ message });
     next();
   });
 

@@ -140,8 +140,7 @@ export function getCurrentUser(req, res) {
 }
 
 export const readOne = (req, res, next) => {
-  const id = (req.params.userId === 'me') ? req.user._id : req.params.userId;
-
+  const id = (req.params.id === 'me') ? req.user._id : req.params.id;
   User.findById(id)
     .then((user) => {
       if (user) {

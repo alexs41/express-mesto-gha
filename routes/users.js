@@ -17,7 +17,7 @@ const userRoutes = Router();
 
 userRoutes.get('/', getAllUsers);
 // userRoutes.get('/me', getCurrentUser);
-userRoutes.get('/:userId', celebrateParamsRouteMe, readOne);
+userRoutes.get('/:id', celebrateParamsRouteMe, readOne);
 
 // userRoutes.get('/:userId', getUserById);
 // userRoutes.post('/', createUser);

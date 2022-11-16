@@ -68,7 +68,7 @@ export function deleteCard(req, res, next) {
     .then((card) => {
       if (!card) {
         responseNotFound(res, 'Карточка не найдена');
-      } else if (card.owner !== req.user._id) {
+      } else if (card.owner != req.user._id) {
         throw forbiddenError;
       } else {
         Card.findOneAndRemove({ _id: req.params.id, owner: req.user._id })

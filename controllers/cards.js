@@ -42,7 +42,7 @@ export function createCard(req, res) {
 }
 
 export function deleteCard(req, res) {
-  Card.findOneAndRemove({ _id: req.params.cardId, owner: req.user._id })
+  Card.findOneAndRemove({ _id: req.params.id, owner: req.user._id })
     .then((card) => ((!card) ? responseNotFound(res, 'Карточка не найдена, или это не карточка другого пользователя') : res.send(card)))
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
@@ -65,7 +65,7 @@ export function deleteCard(req, res) {
 
 export function likeCard(req, res) {
   Card.findByIdAndUpdate(
-    req.params.cardId,
+    req.params.id,
     { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
     { new: true }, // обработчик then получит на вход обновлённую запись
   )
@@ -81,7 +81,7 @@ export function likeCard(req, res) {
 
 export function disLikeCard(req, res) {
   Card.findByIdAndUpdate(
-    req.params.cardId,
+    req.params.id,
     { $pull: { likes: req.user._id } }, // убрать _id из массива
     { new: true },
   )

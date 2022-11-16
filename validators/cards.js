@@ -18,7 +18,7 @@ const schemaCard = Joi.object({
 }).required();
 
 const segmentBodyCard = { [Segments.BODY]: schemaCard };
-const segmentBodyCardId = { [Segments.BODY]: schemaCardId };
+const segmentParamsCardId = { [Segments.PARAMS]: schemaCardId };
 
 export const celebrateBodyCard = celebrate(segmentBodyCard);
-export const celebrateBodyCardId = celebrate(segmentBodyCardId);
+export const celebrateParamsCardId = celebrate(segmentParamsCardId);

@@ -5,15 +5,15 @@ import {
 
 import {
   celebrateBodyCard,
-  celebrateBodyCardId
+  celebrateParamsCardId
 } from '../validators/cards.js';
 
 const cardRoutes = Router();
 
 cardRoutes.get('/', getAllCards);
 cardRoutes.post('/', celebrateBodyCard, createCard);
-cardRoutes.delete('/:id', celebrateBodyCardId, deleteCard);
-cardRoutes.put('/:id/likes', celebrateBodyCardId, likeCard);
-cardRoutes.delete('/:id/likes', celebrateBodyCardId, disLikeCard);
+cardRoutes.delete('/:id', celebrateParamsCardId, deleteCard);
+cardRoutes.put('/:id/likes', celebrateParamsCardId, likeCard);
+cardRoutes.delete('/:id/likes', celebrateParamsCardId, disLikeCard);
 
 export default cardRoutes;

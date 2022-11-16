@@ -11,11 +11,16 @@ import auth from './middlewares/auth.js';
 import { login, createUser } from './controllers/users.js';
 
 import {
+  NotFoundError,
+} from './errors/NotFoundError.js';
+
+import {
   celebrateBodyAuth,
   celebrateBodyUser,
 } from './validators/users.js';
 
 const { PORT = 3000 } = process.env;
+const notFoundError = new NotFoundError('Страницы не существует');
 //------------------------------------
 export const run = async () => {
   process.on('unhandledRejection', (err) => {
@@ -45,6 +50,9 @@ export const run = async () => {
   app.use('/users', userRoutes);
   app.use('/cards', cardRoutes);
 
+  app.all('/*', (req, res) => {
+    throw notFoundError;
+  });
   app.use(errors()); // обработчик ошибок celebrate
   app.use((err, req, res, next) => {
     const status = err.statusCode || constants.HTTP_STATUS_INTERNAL_SERVER_ERROR;

@@ -5,10 +5,9 @@ import {
   schemaURL,
 } from './common.js';
 
-const schemaRouteMe = Joi.alternatives().try(
-  Joi.string().equal('me'),
-  schemaObjectId,
-).required();
+const schemaCardId = Joi.object({
+  id: schemaObjectId,
+}).required();
 
 const schemaName = Joi.string().min(2).max(30).required();
 const schemaLink = schemaURL.required();
@@ -19,5 +18,7 @@ const schemaCard = Joi.object({
 }).required();
 
 const segmentBodyCard = { [Segments.BODY]: schemaCard };
+const segmentBodyCardId = { [Segments.BODY]: schemaCardId };
 
 export const celebrateBodyCard = celebrate(segmentBodyCard);
+export const celebrateBodyCardId = celebrate(segmentBodyCardId);

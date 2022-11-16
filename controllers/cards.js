@@ -24,7 +24,7 @@ export function getAllCards(req, res) {
       } else {
         responseServerError(res);
       }
-    });// данные не записались, вернём ошибку
+    });
 }
 
 export function createCard(req, res) {

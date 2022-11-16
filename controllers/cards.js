@@ -69,6 +69,10 @@ export function deleteCard(req, res, next) {
       if (!card) {
         responseNotFound(res, 'Карточка не найдена');
       } else if (card.owner != req.user._id) {
+        console.log('card.owner ', card.owner);
+        console.log('req.user._id ', req.user._id);
+        console.log("result ", card.owner != req.user._id);
+
         throw forbiddenError;
       } else {
         Card.findOneAndRemove({ _id: req.params.id, owner: req.user._id })
@@ -79,7 +83,7 @@ export function deleteCard(req, res, next) {
             } else {
               responseServerError(res);
             }
-        });// данные не записались, вернём ошибку
+          });// данные не записались, вернём ошибку
       }
     })
     .catch((err) => {
@@ -92,18 +96,6 @@ export function deleteCard(req, res, next) {
       }
     });
 }
-
-// export function deleteCard(req, res) {
-//   Card.findOneAndRemove({ _id: req.params.id, owner: req.user._id })
-//     .then((card) => ((!card) ? responseNotFound(res, 'Карточка не найдена, или это не карточка другого пользователя') : res.send(card)))
-//     .catch((err) => {
-//       if (err.name === 'ValidationError' || err.name === 'CastError') {
-//         responseBadRequestError(res);
-//       } else {
-//         responseServerError(res);
-//       }
-//     });// данные не записались, вернём ошибку
-// }
 
 export function likeCard(req, res) {
   Card.findByIdAndUpdate(

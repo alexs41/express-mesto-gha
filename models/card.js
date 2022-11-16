@@ -1,5 +1,4 @@
 import { Schema, ObjectId, model } from 'mongoose';
-import { Joi } from 'celebrate';
 
 const cardSchema = new Schema({
   name: { // у пользователя есть имя — опишем требования к имени в схеме:

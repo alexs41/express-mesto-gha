@@ -1,7 +1,7 @@
 import express from 'express';
 import { constants } from 'http2';
 import { connect, disconnect } from 'mongoose';
-import { Joi, celebrate, errors } from 'celebrate';
+import { errors } from 'celebrate';
 import bodyParser from 'body-parser';
 //------------------------------------
 import cookieParser from 'cookie-parser';
@@ -13,7 +13,6 @@ import { login, createUser } from './controllers/users.js';
 import {
   celebrateBodyAuth,
   celebrateBodyUser,
-  celebrateParamsRouteMe,
 } from './validators/users.js';
 
 const { PORT = 3000 } = process.env;

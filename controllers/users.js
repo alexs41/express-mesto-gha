@@ -54,8 +54,8 @@ export function createUser(req, res, next) {
       password: hash,
     }))
     .then((userDocument) => {
-        const user = userDocument.toObject();
-        delete user.password;
+      const user = userDocument.toObject();
+      delete user.password;
       // console.log('user ', user);
       res.send({ data: user });
     })// вернём записанные в базу данные

@@ -5,7 +5,7 @@ import {
 
 import {
   celebrateBodyCard,
-  celebrateParamsCardId
+  celebrateParamsCardId,
 } from '../validators/cards.js';
 
 const cardRoutes = Router();

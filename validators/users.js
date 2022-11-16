@@ -32,7 +32,6 @@ const schemaObjectAuth = Joi.object({
   password: schemaPassword,
 }).required();
 
-
 const schemaObjectUser = schemaObjectAuth // объединяем несколько схем в одну
   .concat(schemaObjectProfile)
   .concat(schemaObjectAvatar);

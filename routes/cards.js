@@ -3,10 +3,14 @@ import {
   getAllCards, createCard, deleteCard, likeCard, disLikeCard,
 } from '../controllers/cards.js';
 
+import {
+  celebrateBodyCard
+} from '../validators/cards.js';
+
 const cardRoutes = Router();
 
 cardRoutes.get('/', getAllCards);
-cardRoutes.post('/', createCard);
+cardRoutes.post('/', celebrateBodyCard, createCard);
 cardRoutes.delete('/:cardId', deleteCard);
 cardRoutes.put('/:cardId/likes', likeCard);
 cardRoutes.delete('/:cardId/likes', disLikeCard);

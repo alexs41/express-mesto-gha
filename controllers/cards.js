@@ -1,6 +1,19 @@
 // import { constants } from 'http2';
 import { Card } from '../models/card.js';
 import { responseBadRequestError, responseServerError, responseNotFound } from '../utils/utils.js';
+import {
+  HTTPError,
+  ServerError,
+  NotFoundError,
+  ConflictError,
+  BadRequestError,
+} from '../errors/index.js';
+
+const notFoundError = new NotFoundError('Запрашиваемый пользователь не найден');
+const buildErrorServer = (message) => new ServerError(message);
+const buildErrorBadRequest = (message) => new BadRequestError(`Некорректные данные для пользователя. ${message}`);
+const errorNotUnique = new ConflictError('Пользователь с такой почтой уже существует');
+const UniqueErrorCode = 11000;
 
 export function getAllCards(req, res) {
   Card.find({})

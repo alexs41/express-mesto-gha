@@ -50,7 +50,7 @@ export const run = async () => {
   app.use('/users', userRoutes);
   app.use('/cards', cardRoutes);
 
-  app.all('/*', (req, res) => {
+  app.all('/*', () => {
     throw notFoundError;
   });
   app.use(errors()); // обработчик ошибок celebrate

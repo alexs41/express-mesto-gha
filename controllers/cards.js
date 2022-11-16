@@ -1,20 +1,17 @@
 // import { constants } from 'http2';
 import { Card } from '../models/card.js';
-import { responseBadRequestError, responseServerError, responseNotFound } from '../utils/utils.js';
+import { responseNotFound } from '../utils/utils.js';
 import {
   HTTPError,
   ServerError,
   NotFoundError,
-  ConflictError,
   BadRequestError,
   ForbiddenError,
 } from '../errors/index.js';
 
-const notFoundError = new NotFoundError('Запрашиваемый пользователь не найден');
+const notFoundError = new NotFoundError('Карточка не найдена');
 const buildErrorServer = (message) => new ServerError(message);
 const buildErrorBadRequest = (message) => new BadRequestError(`Некорректные данные для пользователя. ${message}`);
-const errorNotUnique = new ConflictError('Пользователь с такой почтой уже существует');
-const UniqueErrorCode = 11000;
 const forbiddenError = new ForbiddenError('Эту карточку нельзя удалить, карточка другого пользователя');
 
 export function getAllCards(req, res) {
@@ -22,9 +19,9 @@ export function getAllCards(req, res) {
     .then((cards) => res.send({ data: cards }))
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
-        responseBadRequestError(res);
+        buildErrorBadRequest();
       } else {
-        responseServerError(res);
+        buildErrorServer(err.message);
       }
     });
 }
@@ -36,9 +33,9 @@ export function createCard(req, res) {
     .then((card) => res.send({ data: card }))// вернём записанные в базу данные
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
-        responseBadRequestError(res);
+        buildErrorBadRequest();
       } else {
-        responseServerError(res);
+        buildErrorServer(err.message);
       }
     });// данные не записались, вернём ошибку
 }
@@ -67,21 +64,17 @@ export function deleteCard(req, res, next) {
   Card.findById(req.params.id)
     .then((card) => {
       if (!card) {
-        responseNotFound(res, 'Карточка не найдена');
-      } else if (card.owner != req.user._id) {
-        console.log('card.owner ', card.owner);
-        console.log('req.user._id ', req.user._id);
-        console.log("result ", card.owner != req.user._id);
-
+        throw notFoundError;
+      } else if (card.owner.toString() !== req.user._id) {
         throw forbiddenError;
       } else {
         Card.findOneAndRemove({ _id: req.params.id, owner: req.user._id })
-          .then((card) => ((!card) ? responseNotFound(res, 'Карточка не найдена, или это не карточка другого пользователя') : res.send(card)))
+          .then((cardFounded) => ((!cardFounded) ? responseNotFound(res, 'Карточка не найдена, или это не карточка другого пользователя') : res.send(cardFounded)))
           .catch((err) => {
             if (err.name === 'ValidationError' || err.name === 'CastError') {
-              responseBadRequestError(res);
+              buildErrorBadRequest();
             } else {
-              responseServerError(res);
+              buildErrorServer('Server error');
             }
           });// данные не записались, вернём ошибку
       }
@@ -106,9 +99,9 @@ export function likeCard(req, res) {
     .then((card) => ((!card) ? responseNotFound(res, 'Карточка не найдена') : res.send({ data: card })))// вернём записанные в базу данные
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
-        responseBadRequestError(res);
+        buildErrorBadRequest(err.message);
       } else {
-        responseServerError(res);
+        buildErrorServer(err.message);
       }
     });// данные не записались, вернём ошибку
 }
@@ -122,9 +115,9 @@ export function disLikeCard(req, res) {
     .then((card) => ((!card) ? responseNotFound(res, 'Карточка не найдена') : res.send(card)))
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
-        responseBadRequestError(res);
+        buildErrorBadRequest(err.message);
       } else {
-        responseServerError(res);
+        buildErrorServer(err.message);
       }
     });// данные не записались, вернём ошибку
 }

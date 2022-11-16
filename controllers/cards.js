@@ -1,7 +1,5 @@
 import { Card } from '../models/card.js';
-import { responseNotFound } from '../utils/utils.js';
 import {
-  HTTPError,
   ServerError,
   NotFoundError,
   BadRequestError,
@@ -10,7 +8,7 @@ import {
 
 const notFoundError = new NotFoundError('Карточка не найдена');
 const buildErrorServer = (message) => new ServerError(message);
-const buildErrorBadRequest = (message) => new BadRequestError(`Некорректные данные для пользователя. ${message}`);
+const buildErrorBadRequest = (message) => new BadRequestError(`Некорректные данные. ${message}`);
 const forbiddenError = new ForbiddenError('Эту карточку нельзя удалить, карточка другого пользователя');
 
 export function getAllCards(req, res) {
@@ -39,55 +37,24 @@ export function createCard(req, res) {
     });// данные не записались, вернём ошибку
 }
 
-// export const deleteCard = async (req, res) => {
-//   try {
-//     const card = await Card.findById(req.params.id);
-//     if (!card) {
-//       responseNotFound(res, 'Карточка не найдена');
-//     } else if (card.owner !== req.user._id) {
-//       forbiddenError(res);
-//     } else {
-//       res.send(await Card.findOneAndRemove({ _id: req.params.id, owner: req.user._id }));
-//     }
-//   }
-//   catch (err) {
-//     if (err.name === 'ValidationError' || err.name === 'CastError') {
-//       responseBadRequestError(res);
-//     } else {
-//       responseServerError(res);
-//     }
-//   }
-// }
-
-export function deleteCard(req, res, next) {
-  Card.findById(req.params.id)
-    .then((card) => {
-      if (!card) {
-        throw notFoundError;
-      } else if (card.owner.toString() !== req.user._id) {
-        throw forbiddenError;
-      } else {
-        Card.findOneAndRemove({ _id: req.params.id, owner: req.user._id })
-          .then((cardFounded) => ((!cardFounded) ? responseNotFound(res, 'Карточка не найдена, или это не карточка другого пользователя') : res.send(cardFounded)))
-          .catch((err) => {
-            if (err.name === 'ValidationError' || err.name === 'CastError') {
-              buildErrorBadRequest();
-            } else {
-              buildErrorServer('Server error');
-            }
-          });// данные не записались, вернём ошибку
-      }
-    })
-    .catch((err) => {
-      if (err instanceof HTTPError) {
-        next(err);
-      } else if (err.name === 'CastError') {
-        next(buildErrorBadRequest(err.message));
-      } else {
-        next(buildErrorServer(err.message));
-      }
-    });
-}
+export const deleteCard = async (req, res) => {
+  try {
+    const card = await Card.findById(req.params.id);
+    if (!card) {
+      throw notFoundError;
+    } else if (card.owner.toString() !== req.user._id) {
+      forbiddenError(res);
+    } else {
+      res.send(await Card.findOneAndRemove({ _id: req.params.id, owner: req.user._id }));
+    }
+  } catch (err) {
+    if (err.name === 'ValidationError' || err.name === 'CastError') {
+      buildErrorBadRequest();
+    } else {
+      buildErrorServer(err.message);
+    }
+  }
+};
 
 export function likeCard(req, res) {
   Card.findByIdAndUpdate(
@@ -95,7 +62,13 @@ export function likeCard(req, res) {
     { $addToSet: { likes: req.user._id } }, // добавить _id в массив, если его там нет
     { new: true }, // обработчик then получит на вход обновлённую запись
   )
-    .then((card) => ((!card) ? responseNotFound(res, 'Карточка не найдена') : res.send({ data: card })))// вернём записанные в базу данные
+    .then((card) => {
+      if (!card) {
+        throw notFoundError;
+      } else {
+        res.send({ data: card });
+      }
+    })// вернём записанные в базу данные
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
         buildErrorBadRequest(err.message);
@@ -111,7 +84,13 @@ export function disLikeCard(req, res) {
     { $pull: { likes: req.user._id } }, // убрать _id из массива
     { new: true },
   )
-    .then((card) => ((!card) ? responseNotFound(res, 'Карточка не найдена') : res.send(card)))
+    .then((card) => {
+      if (!card) {
+        throw notFoundError;
+      } else {
+        res.send({ data: card });
+      }
+    })// вернём записанные в базу данные
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
         buildErrorBadRequest(err.message);

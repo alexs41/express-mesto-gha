@@ -1,8 +1,6 @@
 import { Router } from 'express';
 import {
-  getAllUsers, updateUserInfo, updateAvatar,
-
-  readOne,
+  getAllUsers, updateUserInfo, updateAvatar, readOne,
 } from '../controllers/users.js';
 
 import {

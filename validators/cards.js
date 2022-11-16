@@ -1,9 +1,5 @@
 import { Joi, Segments } from 'celebrate';
-import {
-  celebrate,
-  schemaObjectId,
-  schemaURL,
-} from './common.js';
+import { celebrate, schemaObjectId, schemaURL } from './common.js';
 
 const schemaCardId = Joi.object({
   id: schemaObjectId,

@@ -3,10 +3,10 @@ import validator from 'validator';
 import bcrypt from 'bcrypt';
 
 const userSchema = new Schema({
-  name: { // у пользователя есть имя — опишем требования к имени в схеме:
-    type: String, // имя — это строка
-    minlength: 2, // минимальная длина имени — 2 символа
-    maxlength: 30, // а максимальная — 30 символов
+  name: {
+    type: String,
+    minlength: 2,
+    maxlength: 30,
     default: 'Жак-Ив Кусто',
   },
   about: {
@@ -33,7 +33,6 @@ const userSchema = new Schema({
     select: false,
   },
 }, { versionKey: false });
-// { versionKey: false }
 
 userSchema.statics.findUserByCredentials = function findUserByCredentials(email, password) {
   return this.findOne({ email }).select('+password')

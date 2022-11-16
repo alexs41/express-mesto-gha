@@ -44,7 +44,7 @@ export const deleteCard = async (req, res, next) => {
     if (!card) {
       throw notFoundError;
     } else if (card.owner.toString() !== req.user._id) {
-      next(forbiddenError(res));
+      next(forbiddenError);
     } else {
       res.send(await Card.findOneAndRemove({ _id: req.params.id, owner: req.user._id }));
     }
@@ -52,7 +52,7 @@ export const deleteCard = async (req, res, next) => {
     if (err.name === 'ValidationError' || err.name === 'CastError') {
       next(buildErrorBadRequest());
     } else {
-      next(buildErrorServer(err.message));
+      next(notFoundError);
     }
   }
 };

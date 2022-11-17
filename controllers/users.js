@@ -135,24 +135,3 @@ export function getCurrentUser(req, res, next) {
       }
     });// данные не записались, вернём ошибку
 }
-
-// export const find = (req, res, next) => {
-//   // const id = (req.params.id === 'me') ? req.user._id : req.params.id;
-//   User.findById(req.params.id)
-//     .then((user) => {
-//       if (user) {
-//         res.send(user);
-//       } else {
-//         throw notFoundError;
-//       }
-//     })
-//     .catch((err) => {
-//       if (err instanceof HTTPError) {
-//         next(err);
-//       } else if (err.name === 'CastError') {
-//         next(badRequestError);
-//       } else {
-//         next(err);
-//       }
-//     });
-// };

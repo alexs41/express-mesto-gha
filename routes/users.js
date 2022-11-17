@@ -1,10 +1,10 @@
 import { Router } from 'express';
 import {
-  getAllUsers, updateUserInfo, updateAvatar, readOne,
+  getAllUsers, updateUserInfo, updateAvatar, getCurrentUser, getUserById,
 } from '../controllers/users.js';
 
 import {
-  celebrateParamsRouteMe,
+  celebrateParamsUserId,
   celebrateBodyProfile,
   celebrateBodyAvatar,
 } from '../validators/users.js';
@@ -12,7 +12,8 @@ import {
 const userRoutes = Router();
 
 userRoutes.get('/', getAllUsers);
-userRoutes.get('/:id', celebrateParamsRouteMe, readOne);
+userRoutes.get('/me', getCurrentUser);
+userRoutes.get('/:id', celebrateParamsUserId, getUserById);
 userRoutes.patch('/me', celebrateBodyProfile, updateUserInfo);
 userRoutes.patch('/me/avatar', celebrateBodyAvatar, updateAvatar);
 

@@ -7,22 +7,24 @@ import {
   NotFoundError,
   ConflictError,
   BadRequestError,
+  UnauthorizedError,
 } from '../errors/index.js';
 
 const notFoundError = new NotFoundError('Пользователь не найден');
-const buildErrorServer = (message) => new ServerError(message);
-const buildErrorBadRequest = (message) => new BadRequestError(`Некорректные данные для пользователя. ${message}`);
+const serverError = new ServerError('Произошла ошибка сервера');
+const badRequestError = new BadRequestError('Некорректные данные для пользователя.');
 const errorNotUnique = new ConflictError('Пользователь с такой почтой уже существует');
+const unauthorizedError = new UnauthorizedError('Ошибка авторизации');
 const UniqueErrorCode = 11000;
 
 export function getAllUsers(req, res, next) {
   User.find({})
     .then((users) => res.send({ data: users }))
-    .catch((err) => next(buildErrorServer(err.message)));
+    .catch(() => next(serverError));
 }
 
 export function getUserById(req, res, next) {
-  User.findById(req.params.userId)
+  User.findById(req.params.id)
     .then((user) => {
       if (!user) {
         throw notFoundError;
@@ -31,10 +33,12 @@ export function getUserById(req, res, next) {
       }
     })
     .catch((err) => {
-      if (err.name === 'ValidationError' || err.name === 'CastError') {
-        next(buildErrorBadRequest(err.message));
+      if (err instanceof HTTPError) {
+        next(err);
+      } else if (err.name === 'CastError') {
+        next(badRequestError);
       } else {
-        next(buildErrorServer(err.message));
+        next(err);
       }
     });// данные не записались, вернём ошибку
 }
@@ -64,9 +68,9 @@ export function createUser(req, res, next) {
       } else if (err.code === UniqueErrorCode) {
         next(errorNotUnique);
       } else if (err.name === 'ValidationError') {
-        next(buildErrorBadRequest(err.message));
+        next(badRequestError);
       } else {
-        next(buildErrorServer(err.message));
+        next(serverError);
       }
     });
 }
@@ -79,9 +83,9 @@ export function updateUserInfo(req, res, next) {
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
-        next(buildErrorBadRequest(err.message));
+        next(badRequestError);
       } else {
-        next(buildErrorServer(err.message));
+        next(serverError);
       }
     });// данные не записались, вернём ошибку
 }
@@ -94,14 +98,14 @@ export function updateAvatar(req, res, next) {
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
-        next(buildErrorBadRequest(err.message));
+        next(badRequestError);
       } else {
-        next(buildErrorServer(err.message));
+        next(serverError);
       }
     });// данные не записались, вернём ошибку
 }
 
-export function login(req, res) {
+export function login(req, res, next) {
   const { email, password } = req.body;
 
   return User.findUserByCredentials(email, password)
@@ -110,14 +114,8 @@ export function login(req, res) {
       const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
       // вернём токен
       res.send({ token });
-      req.cookies.jwt = token;
     })
-    .catch((err) => {
-      // ошибка аутентификации
-      res
-        .status(401)
-        .send({ message: err.message });
-    });
+    .catch(() => next(unauthorizedError));// ошибка аутентификации
 }
 
 export function getCurrentUser(req, res, next) {
@@ -131,30 +129,30 @@ export function getCurrentUser(req, res, next) {
     })
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
-        next(buildErrorBadRequest(err.message));
+        next(badRequestError);
       } else {
-        next(buildErrorServer(err.message));
+        next(err);
       }
     });// данные не записались, вернём ошибку
 }
 
-export const readOne = (req, res, next) => {
-  const id = (req.params.id === 'me') ? req.user._id : req.params.id;
-  User.findById(id)
-    .then((user) => {
-      if (user) {
-        res.send(user);
-      } else {
-        throw notFoundError;
-      }
-    })
-    .catch((err) => {
-      if (err instanceof HTTPError) {
-        next(err);
-      } else if (err.name === 'CastError') {
-        next(buildErrorBadRequest(err.message));
-      } else {
-        next(buildErrorServer(err.message));
-      }
-    });
-};
+// export const find = (req, res, next) => {
+//   // const id = (req.params.id === 'me') ? req.user._id : req.params.id;
+//   User.findById(req.params.id)
+//     .then((user) => {
+//       if (user) {
+//         res.send(user);
+//       } else {
+//         throw notFoundError;
+//       }
+//     })
+//     .catch((err) => {
+//       if (err instanceof HTTPError) {
+//         next(err);
+//       } else if (err.name === 'CastError') {
+//         next(badRequestError);
+//       } else {
+//         next(err);
+//       }
+//     });
+// };

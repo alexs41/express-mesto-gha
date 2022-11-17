@@ -7,20 +7,14 @@ import {
 } from '../errors/index.js';
 
 const notFoundError = new NotFoundError('Карточка не найдена');
-const buildErrorServer = (message) => new ServerError(message);
-const buildErrorBadRequest = (message) => new BadRequestError(`Некорректные данные. ${message}`);
+const serverError = new ServerError('Произошла ошибка сервера');
+const badRequestError = new BadRequestError('Некорректные данные.');
 const forbiddenError = new ForbiddenError('Эту карточку нельзя удалить, карточка другого пользователя');
 
 export function getAllCards(req, res, next) {
   Card.find({})
     .then((cards) => res.send({ data: cards }))
-    .catch((err) => {
-      if (err.name === 'ValidationError' || err.name === 'CastError') {
-        next(buildErrorBadRequest());
-      } else {
-        next(buildErrorServer(err.message));
-      }
-    });
+    .catch(() => next(serverError));
 }
 
 export function createCard(req, res, next) {
@@ -30,9 +24,9 @@ export function createCard(req, res, next) {
     .then((card) => res.send({ data: card }))// вернём записанные в базу данные
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
-        next(buildErrorBadRequest());
+        next(badRequestError);
       } else {
-        next(buildErrorServer(err.message));
+        next(serverError);
       }
     });// данные не записались, вернём ошибку
 }
@@ -49,9 +43,9 @@ export const deleteCard = async (req, res, next) => {
     }
   } catch (err) {
     if (err.name === 'ValidationError' || err.name === 'CastError') {
-      next(buildErrorBadRequest());
+      next(badRequestError);
     } else {
-      next(notFoundError);
+      next(err);
     }
   }
 };
@@ -72,9 +66,9 @@ export function likeCard(req, res, next) {
   // вернём записанные в базу данные
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
-        next(buildErrorBadRequest(err.message));
+        next(badRequestError);
       } else {
-        next(buildErrorServer(err.message));
+        next(serverError);
       }
     });// данные не записались, вернём ошибку
 }
@@ -95,9 +89,9 @@ export function disLikeCard(req, res, next) {
   // вернём записанные в базу данные
     .catch((err) => {
       if (err.name === 'ValidationError' || err.name === 'CastError') {
-        next(buildErrorBadRequest(err.message));
+        next(badRequestError);
       } else {
-        next(buildErrorServer(err.message));
+        next(serverError);
       }
     });// данные не записались, вернём ошибку
 }

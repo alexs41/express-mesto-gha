@@ -10,4 +10,4 @@ export const celebrate = celebrator(
 export const schemaObjectId = Joi.string().hex().length(24); // как валидировать ObjectID
 // схема без .required() будет считать поле необязательным
 // export const schemaURL = Joi.string().uri({ scheme: ['http', 'https'] });
-export const schemaURL = Joi.string().pattern(/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/);
+export const schemaURL = Joi.string().pattern(/^(https?:\/\/)?([\da-z\.-]+)\.([a-z\.]{2,6})([\/\w \.-]*)*\/?$/); //eslint-disable-line

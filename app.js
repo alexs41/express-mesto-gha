@@ -19,6 +19,8 @@ import {
   celebrateBodyUser,
 } from './validators/users.js';
 
+import { requestLogger, errorLogger } from './middlewares/logger.js';
+
 const { PORT = 3000 } = process.env;
 const notFoundError = new NotFoundError('Страницы не существует');
 //------------------------------------
@@ -41,6 +43,8 @@ export const run = async () => {
     console.log('Connected to MongoDB!!!');
   });
 
+  app.use(requestLogger); // подключаем логгер запросов
+
   app.post('/signin', celebrateBodyAuth, login);
   app.post('/signup', celebrateBodyUser, createUser);
 
@@ -50,6 +54,7 @@ export const run = async () => {
   app.use('/users', userRoutes);
   app.use('/cards', cardRoutes);
 
+  app.use(errorLogger); // подключаем логгер ошибок
   app.all('/*', () => {
     throw notFoundError;
   });

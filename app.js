@@ -44,7 +44,7 @@ export const run = async () => {
     }
     if (method === 'OPTIONS') {
       // разрешаем кросс-доменные запросы с этими заголовками
-      res.header('Access-Control-Allow-Headers', requestHeaders);
+      res.header('Access-Control-Allow-Headers', "*");
       // завершаем обработку запроса и возвращаем результат клиенту
       return res.end();
   }

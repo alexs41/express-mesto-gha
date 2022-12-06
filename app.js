@@ -31,6 +31,25 @@ export const run = async () => {
   });
 
   const app = express();
+  const allowedCors = [
+    'https://mesto-alexs41.nomoredomains.club',
+    'http://mesto-alexs41.nomoredomains.club/',
+    'localhost:3000'
+  ];
+  app.use(function(req, res, next) {
+    const { origin } = req.headers; // Сохраняем источник запроса в переменную origin
+    const requestHeaders = req.headers['access-control-request-headers']; 
+    if (allowedCors.includes(origin)) { // проверяем, что источник запроса есть среди разрешённых
+      res.header('Access-Control-Allow-Origin', origin);
+    }
+    if (method === 'OPTIONS') {
+      // разрешаем кросс-доменные запросы с этими заголовками
+      res.header('Access-Control-Allow-Headers', requestHeaders);
+      // завершаем обработку запроса и возвращаем результат клиенту
+      return res.end();
+  }
+    next();
+  });
 
   app.use(bodyParser.json());
   app.use(cookieParser()); // подключаем парсер кук как мидлвэр

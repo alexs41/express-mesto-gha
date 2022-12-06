@@ -34,7 +34,7 @@ export const run = async () => {
   const allowedCors = [
     'https://mesto-alexs41.nomoredomains.club',
     'http://mesto-alexs41.nomoredomains.club/',
-    'localhost:3000'
+    'http://localhost:3000'
   ];
   app.use(function(req, res, next) {
     const { origin } = req.headers; // Сохраняем источник запроса в переменную origin
